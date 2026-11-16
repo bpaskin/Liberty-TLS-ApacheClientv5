@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<server description="Liberty TLS with Apache HttpClient 5">
+
+    <featureManager>
+        <feature>servlet-6.1</feature>
+        <!-- Provides the SSL configuration and com.ibm.websphere.ssl.JSSEHelper -->
+        <feature>transportSecurity-1.0</feature>
+    </featureManager>
+
+    <!-- Password comes from server.env (copied from server.env.example, git-ignored) or a real environment variable. -->
+    <variable name="keystore.password" value="${env.KEYSTORE_PASSWORD}"/>
+
+    <!-- Inbound HTTPS only, bound to localhost -->
+    <httpEndpoint id="defaultHttpEndpoint" host="localhost" httpPort="-1" httpsPort="9443"/>
+
+    <!-- Liberty's internal keystore (resources/security/key.p12, auto-generated on first start).
+         It also serves as the truststore: trusted CA certificates are imported into this same file. -->
+    <keyStore id="defaultKeyStore" password="${keystore.password}"/>
+
+    <!-- The SSL configuration the servlet looks up via JSSEHelper -->
+    <ssl id="defaultSSLConfig" keyStoreRef="defaultKeyStore" trustStoreRef="defaultKeyStore" sslProtocol="TLSv1.3"/>
+
+    <webApplication id="liberty-tls-apache5" location="liberty-tls-apache5.war" contextRoot="/"/>
+</server>
