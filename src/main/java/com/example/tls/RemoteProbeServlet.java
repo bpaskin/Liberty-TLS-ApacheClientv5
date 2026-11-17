@@ -43,6 +43,10 @@ abstract class RemoteProbeServlet extends HttpServlet {
             if (!"https".equalsIgnoreCase(remoteUri.getScheme()) || remoteUri.getHost() == null) {
                 throw new IllegalArgumentException("remote.url must be an absolute HTTPS URL");
             }
+            // For JVM-managed TLS, replace the JSSEHelper call with this one.
+            // configureClient(SSLContext.getDefault());
+            // In the catch clause, replace com.ibm.websphere.ssl.SSLException
+            // with java.security.NoSuchAlgorithmException.
             configureClient(JSSEHelper.getInstance().getSSLContext("defaultSSLConfig", null, null));
         } catch (com.ibm.websphere.ssl.SSLException | URISyntaxException | IllegalArgumentException e) {
             throw new ServletException("Unable to initialise the HTTP client", e);

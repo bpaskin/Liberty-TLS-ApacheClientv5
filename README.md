@@ -66,9 +66,14 @@ Find the upstream HTTP status or the connection exception in
 
 ## How Liberty supplies TLS
 
-`RemoteProbeServlet.init()` uses `com.ibm.websphere.ssl.JSSEHelper` from Liberty's
-`transportSecurity-1.0` feature to look up the `defaultSSLConfig` alias.
-[Servlet source](src/main/java/com/example/tls/RemoteProbeServlet.java)
+With `transportSecurity-1.0`, `SSLSocketFactory.getDefault()` uses Liberty's TLS settings.
+Clients using that factory can inherit `defaultSSLConfig` automatically. Use `JSSEHelper`
+to select a different `<ssl>` alias explicitly in application code. [Open Liberty transport security](https://openliberty.io/docs/latest/reference/feature/transportSecurity.html) · [JSSEHelper API](https://openliberty.io/docs/modules/reference/25.0.0.12/com.ibm.websphere.appserver.api.ssl_1.8-javadoc/com/ibm/websphere/ssl/JSSEHelper.html)
+
+Both clients in this sample take an `SSLContext`. Under the same feature,
+`SSLContext.getDefault()` returns Java's JSSE context. To apply Liberty's settings,
+`RemoteProbeServlet.init()` explicitly looks up `defaultSSLConfig` with
+`com.ibm.websphere.ssl.JSSEHelper`. [Servlet source](src/main/java/com/example/tls/RemoteProbeServlet.java)
 
 ```java
 configureClient(JSSEHelper.getInstance().getSSLContext("defaultSSLConfig", null, null));
